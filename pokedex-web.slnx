@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="dominio/dominio.csproj" Id="2a42ec6e-1b82-4c8f-9591-78b8ac47f05c" />
+  <Project Path="negocio/negocio.csproj" Id="8aebc089-1ff5-487d-93cb-dac54d842867" />
+  <Project Path="pokedex-web/pokedex-web.csproj" Id="401caebd-a909-4b06-b4c9-cc6aeb6f65a0" />
+</Solution>
