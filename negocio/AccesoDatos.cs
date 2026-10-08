@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using System.Configuration;
+
 
 namespace negocio
 {
@@ -12,22 +14,32 @@ namespace negocio
         private SqlConnection conexion;
         private SqlCommand comando;
         private SqlDataReader lector;
-        public SqlDataReader Lector {
+        public SqlDataReader Lector
+        {
             get { return lector; }
         }
 
-        public AccesoDatos() { 
-            //CONTRASEÑA
-            conexion = new SqlConnection("server=localhost,1433; database=POKEDEX_DB; user id=sa; password=Gluck-3551; TrustServerCertificate=True;");
+        public AccesoDatos()
+        {
+            conexion = new SqlConnection(ConfigurationManager.AppSettings["cadenaConexion"]);
             comando = new SqlCommand();
         }
 
-        public void setearConsulta(string consulta) { 
+        public void setearConsulta(string consulta)
+        {
             comando.CommandType = System.Data.CommandType.Text;
             comando.CommandText = consulta;
         }
 
-        public void ejecutarLectura() { 
+        public void setearProcedimiento(string sp)
+        {
+            comando.CommandType = System.Data.CommandType.StoredProcedure;
+            comando.CommandText = sp;
+
+        }
+
+        public void ejecutarLectura()
+        {
             comando.Connection = conexion;
             try
             {
@@ -36,12 +48,12 @@ namespace negocio
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }
 
-        public void ejecutarAccion() {
+        public void ejecutarAccion()
+        {
             comando.Connection = conexion;
             try
             {
@@ -50,20 +62,35 @@ namespace negocio
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }
 
-        public void setearParametro(string nombre,object valor) {
-            comando.Parameters.AddWithValue(nombre,valor);
+        public int ejecutarAccionScalar()
+        {
+            comando.Connection = conexion;
+            try
+            {
+                conexion.Open();
+                return int.Parse(comando.ExecuteScalar().ToString());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void setearParametro(string nombre, object valor)
+        {
+            comando.Parameters.AddWithValue(nombre, valor);
         }
 
         public void cerrarConexion()
         {
-            if(lector != null)
+            if (lector != null)
                 lector.Close();
             conexion.Close();
         }
+
     }
 }
