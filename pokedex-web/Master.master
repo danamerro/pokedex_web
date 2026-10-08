@@ -30,7 +30,7 @@
                             <a class="nav-link" href="Default.aspx">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="PokemonsLista.aspx">Lista Pokemons</a>
+                            <a class="nav-link" href="PokemonLista.aspx">Lista Pokemons</a>
                         </li>
                     </ul>
                 </div>
