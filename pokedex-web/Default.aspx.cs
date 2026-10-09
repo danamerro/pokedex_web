@@ -17,7 +17,17 @@ namespace pokedex_web
         {
             PokemonNegocio negocio = new PokemonNegocio();
             ListaPokemon = negocio.listarConSP();
+            if (!IsPostBack) {
+                repRepetidor.DataSource = ListaPokemon;
+                repRepetidor.DataBind();
+            }
 
+        }
+
+        protected void btnEjemplo_Click(object sender, EventArgs e)
+        {
+            //se castea un boton
+            string valor = ((Button)sender).CommandArgument;
         }
     }
 }
