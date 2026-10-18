@@ -16,6 +16,7 @@ namespace pokedex_web
             txtId.Enabled= false;
             try
             {
+                //configuracion inicial de la pantalla
                 if (!IsPostBack)
                 {
                     ElementoNegocio negocio = new ElementoNegocio();
@@ -30,6 +31,33 @@ namespace pokedex_web
                     ddlDebilidad.DataValueField = "Id";
                     ddlDebilidad.DataTextField = "Descripcion";
                     ddlDebilidad.DataBind();
+                }
+
+                //config si estamos modificando
+                string id = Request.QueryString["id"] != null ? Request.QueryString["id"].ToString() : "";
+                if (id != "" && !IsPostBack) 
+                { 
+                    //traer el pokemon con el que estoy trabajando
+                    PokemonNegocio negocio= new PokemonNegocio();
+                    //forma larga
+                    //List<Pokemon> lista =  negocio.listar(id);
+                    //Pokemon seleccionado = lista[0];
+
+                    //forma corta
+                    Pokemon seleccionado = (negocio.listar(id))[0];
+
+                    //precargar todos los campos...
+                    txtId.Text = id;
+                    txtNombre.Text = seleccionado.Nombre;
+                    txtDescripcion.Text = seleccionado.Descripcion;
+                    txtImagenUrl.Text = seleccionado.UrlImagen;
+                    txtNumero.Text = seleccionado.Numero.ToString();
+
+                    //precargar los desplegables
+                    ddlTipo.SelectedValue = seleccionado.Tipo.Id.ToString();
+                    ddlDebilidad.SelectedValue = seleccionado.Debilidad.Id.ToString();
+                    //forzamos la carga de imagen
+                    txtImagenUrl_TextChanged(sender, e);
 
 
 
@@ -62,7 +90,16 @@ namespace pokedex_web
                 nuevo.Debilidad = new Elemento();
                 nuevo.Debilidad.Id = int.Parse(ddlDebilidad.SelectedValue);
 
+                //si ya cuenta con id voy a modificar el pokemon, sino lo crea
+                if (Request.QueryString["id"] != null) 
+                { 
+                    nuevo.Id = int.Parse(txtId.Text);
+                    negocio.modificarConSP(nuevo);
+                }
+                else
                 negocio.agregarConSP(nuevo);
+
+
                 Response.Redirect("PokemonLista.aspx");
             }
             catch (Exception ex)

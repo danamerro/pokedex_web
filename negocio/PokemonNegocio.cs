@@ -12,22 +12,32 @@ namespace negocio
      public class PokemonNegocio
     {
         //se declara la clase PokemonNegocio
-        public List<Pokemon> listar() {
+        public List<Pokemon> listar(string id = "") {
 
             List<Pokemon> lista = new List<Pokemon>();
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                datos.setearConsulta("SELECT Numero, Nombre, P.Descripcion, UrlImagen, " +
+                //Arma consulta y agrega filtro por Id si se recibe uno.
+
+                string consulta = ("SELECT Numero, Nombre, P.Descripcion, UrlImagen, " +
                                     "E.Descripcion Tipo, D.Descripcion Debilidad, " +
                                     "P.IdTipo, P.IdDebilidad, P.Id " +
                                     "FROM POKEMONS P, ELEMENTOS E, ELEMENTOS D " +
                                     "WHERE E.Id = P.IdTipo " +
                                     "AND D.Id = P.IdDebilidad " +
-                                    "AND P.Activo = 1");
+                                    "AND P.Activo = 1 ");
+                if (id != "")
+                    consulta += "AND P.Id = @id";
+
+                datos.setearConsulta(consulta);
+
+                if (id != "")
+                    datos.setearParametro("@id", id);
 
                 datos.ejecutarLectura();
+
                 while (datos.Lector.Read()){ 
                     Pokemon aux = new Pokemon();
 
@@ -259,6 +269,32 @@ namespace negocio
         
         }
 
+        public void modificarConSP(Pokemon poke)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearProcedimiento("storedModificarPokemon");
+                datos.setearParametro("@numero", poke.Numero);
+                datos.setearParametro("@nombre", poke.Nombre);
+                datos.setearParametro("@desc", poke.Descripcion);
+                datos.setearParametro("@img", poke.UrlImagen);
+                datos.setearParametro("@idTipo", poke.Tipo.Id);
+                datos.setearParametro("@idDebilidad", poke.Debilidad.Id);
+                datos.setearParametro("@Id", poke.Id);
+
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
         public void eliminar(int id) {
             try
             {
@@ -288,5 +324,6 @@ namespace negocio
                 throw ex;
             }
         }
+
     }
 }
