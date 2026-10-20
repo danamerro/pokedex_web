@@ -23,11 +23,10 @@ namespace negocio
 
                 string consulta = ("SELECT Numero, Nombre, P.Descripcion, UrlImagen, " +
                                     "E.Descripcion Tipo, D.Descripcion Debilidad, " +
-                                    "P.IdTipo, P.IdDebilidad, P.Id " +
+                                    "P.IdTipo, P.IdDebilidad, P.Id, P.Activo  " +
                                     "FROM POKEMONS P, ELEMENTOS E, ELEMENTOS D " +
                                     "WHERE E.Id = P.IdTipo " +
-                                    "AND D.Id = P.IdDebilidad " +
-                                    "AND P.Activo = 1 ");
+                                    "AND D.Id = P.IdDebilidad ");
                 if (id != "")
                     consulta += "AND P.Id = @id";
 
@@ -56,6 +55,8 @@ namespace negocio
                     aux.Debilidad = new Elemento();
                     aux.Debilidad.Id = (int)datos.Lector["IdDebilidad"];
                     aux.Debilidad.Descripcion = (string)datos.Lector["Debilidad"];
+
+                    aux.Activo = bool.Parse(datos.Lector["Activo"].ToString());
 
                     lista.Add(aux);
                 }
@@ -312,12 +313,13 @@ namespace negocio
             }
         }
 
-        public void eliminarLogico(int id)  {
+        public void eliminarLogico(int id, bool activo = false)  {
             try
             {
                 AccesoDatos datos = new AccesoDatos();
-                datos.setearConsulta("update POKEMONS set Activo = 0 where id = @id");
+                datos.setearConsulta("update POKEMONS set Activo = @activo where id = @id");
                 datos.setearParametro("@id", id);
+                datos.setearParametro("@activo", activo);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)
