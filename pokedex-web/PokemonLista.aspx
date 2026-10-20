@@ -2,7 +2,19 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
     <h1>Lista de Pokemons</h1>
+    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+        <ContentTemplate>
+
+    <div class="row">
+        <div class="col-6">
+            <div class="mb-3">
+                <asp:Label Text="Filtrar" runat="server" />
+                <asp:TextBox runat="server" ID="txtFiltro" CssClass="form-control" AutoPostBack="true" OnTextChanged="filtro_TextChanged" />
+            </div>
+        </div>
+        </div>
     <asp:GridView ID="dgvPokemons" runat="server" DataKeyNames="Id" 
         CssClass="table" AutoGenerateColumns="false" OnSelectedIndexChanged="dgvPokemons_SelectedIndexChanged" 
         OnPageIndexChanging="dgvPokemons_PageIndexChanging"
@@ -17,5 +29,7 @@
         </Columns>
 
     </asp:GridView>
+        </ContentTemplate>
+    </asp:UpdatePanel>
     <a href="FormularioPokemon.aspx" class="btn btn-primary">Agregar</a>
 </asp:Content>
