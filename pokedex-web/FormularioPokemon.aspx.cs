@@ -11,9 +11,11 @@ namespace pokedex_web
 {
     public partial class FormularioPokemon : System.Web.UI.Page
     {
+        public bool confirmaEliminacion { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
             txtId.Enabled= false;
+            confirmaEliminacion = false;
             try
             {
                 //configuracion inicial de la pantalla
@@ -114,7 +116,26 @@ namespace pokedex_web
             imgPokemon.ImageUrl = txtImagenUrl.Text;
         }
 
+        protected void btnEliminar_Click(object sender, EventArgs e)
+        {
+            confirmaEliminacion = true;
+        }
 
-
+        protected void btnConfirmaEliminar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (chkConfirmaEliminacion.Checked) 
+                { 
+                    PokemonNegocio negocio = new PokemonNegocio();
+                    negocio.eliminar(int.Parse(txtId.Text));
+                    Response.Redirect("pokemonLista.aspx");
+                }
+            }
+            catch (Exception ex)
+            {
+                Session.Add("error",ex);
+            }
+        }
     }
 }
