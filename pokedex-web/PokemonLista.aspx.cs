@@ -11,12 +11,19 @@ namespace pokedex_web
 {
     public partial class PokemonLista : System.Web.UI.Page
     {
+        public bool FiltroAvanzado { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
+            //2da opcion para cuando se pierde el valor de la propiedad en la actualizacion del filtro.
+            FiltroAvanzado = chkAvanzado.Checked;
+            if (!IsPostBack) 
+            { 
             PokemonNegocio negocio = new PokemonNegocio();
             Session.Add("listaPokemons", negocio.listarConSP());
             dgvPokemons.DataSource = Session["listaPokemons"];
             dgvPokemons.DataBind();
+            }
+            
         }
         protected void dgvPokemons_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
@@ -36,6 +43,51 @@ namespace pokedex_web
             List<Pokemon> listaFiltrada = lista.FindAll(x => x.Nombre.ToUpper().Contains(txtFiltro.Text.ToUpper()));
             dgvPokemons.DataSource= listaFiltrada;
             dgvPokemons.DataBind();
+        }
+
+        protected void chkAvanzado_CheckedChanged(object sender, EventArgs e)
+        {
+            FiltroAvanzado =  chkAvanzado.Checked;
+            txtFiltro.Enabled = !FiltroAvanzado;
+        }
+
+        protected void ddlCampo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //para no acumular cosas cargadas
+            ddlCriterio.Items.Clear();
+            //aca esta lo de numero
+            if (ddlCampo.SelectedItem.ToString() == "Número")
+            {
+                ddlCriterio.Items.Add("Igual a ");
+                ddlCriterio.Items.Add("Mayor a");
+                ddlCriterio.Items.Add("Menor a");
+            }
+            //aca esta lo de tipo  y nombre
+            else 
+            {
+                ddlCriterio.Items.Add("Contiene");
+                ddlCriterio.Items.Add("Comienza con");
+                ddlCriterio.Items.Add("Termina con");
+            }
+        }
+
+        protected void btnBuscar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PokemonNegocio negocio = new PokemonNegocio();
+                dgvPokemons.DataSource = negocio.filtrar(
+                                        ddlCampo.SelectedItem.ToString(), 
+                                        ddlCriterio.SelectedItem.ToString(),
+                                        txtFiltroAvanzado.Text, 
+                                        ddlEstado.SelectedItem.ToString());
+                dgvPokemons.DataBind();
+            }
+            catch (Exception ex)
+            {
+                Session.Add("error", ex);
+                throw;
+            }
         }
     }
 }
